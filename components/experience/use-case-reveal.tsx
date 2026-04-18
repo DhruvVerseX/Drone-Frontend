@@ -11,7 +11,7 @@ export function UseCaseReveal() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex max-w-3xl flex-col gap-4">
           <div className="tech-label">Environmental shifts / use-case reveal</div>
-          <h2 className="text-section">The same craft becomes a different world under a different mission.</h2>
+          <h2 className="text-section">One craft. Five worlds.</h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">

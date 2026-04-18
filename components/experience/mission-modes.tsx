@@ -20,10 +20,7 @@ export function MissionModes({ activeMode, onChange }: MissionModesProps) {
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.7fr_1.3fr]">
         <div className="space-y-5">
           <div className="tech-label">Mission modes / interface switching</div>
-          <h2 className="text-section max-w-sm">Choose the flight behavior, not a service card.</h2>
-          <p className="max-w-sm text-subhead">
-            Every mode reframes the world: data density, motion rhythm, route logic, and visual pressure.
-          </p>
+          <h2 className="text-section max-w-sm">Switch the mission.</h2>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">

@@ -30,13 +30,13 @@ export const missionModes: MissionMode[] = [
     code: "SV-01",
     accent: "var(--cyan)",
     icon: Radar,
-    summary: "Terrain intelligence with centimeter-grade mapping and live volumetric sweeps.",
+    summary: "Map terrain live.",
     metrics: [
       { label: "Terrain Depth", value: "14.2 km2" },
       { label: "Point Cloud", value: "4.8B pts" },
       { label: "Signal Lock", value: "99.2%" }
     ],
-    panels: ["Contour relay", "Altitude mesh", "Thermal overlay"]
+    panels: ["Contours", "Altitude", "Thermal"]
   },
   {
     id: "secure",
@@ -44,13 +44,13 @@ export const missionModes: MissionMode[] = [
     code: "SC-09",
     accent: "var(--green)",
     icon: Shield,
-    summary: "Low-light perimeter scanning with predictive route interception and silent tracking.",
+    summary: "Watch the perimeter.",
     metrics: [
       { label: "Perimeter Span", value: "28 km" },
       { label: "Threat Index", value: "02 / low" },
       { label: "Target Lock", value: "4 nodes" }
     ],
-    panels: ["Night vision grid", "Patrol arcs", "Anomaly flags"]
+    panels: ["Night", "Patrol", "Flags"]
   },
   {
     id: "capture",
@@ -58,13 +58,13 @@ export const missionModes: MissionMode[] = [
     code: "CP-17",
     accent: "var(--amber)",
     icon: Aperture,
-    summary: "Cinematic pathing tuned for stabilized pursuit, arc turns, and lens-aware framing.",
+    summary: "Track with smooth motion.",
     metrics: [
       { label: "Stabilization", value: "0.2 deg" },
       { label: "Frame Sync", value: "240 fps" },
       { label: "Path Smooth", value: "98.7%" }
     ],
-    panels: ["Arc camera map", "Lens telemetry", "Motion smoothing"]
+    panels: ["Arc", "Lens", "Smooth"]
   },
   {
     id: "deliver",
@@ -72,13 +72,13 @@ export const missionModes: MissionMode[] = [
     code: "DL-04",
     accent: "var(--cyan)",
     icon: Truck,
-    summary: "Urban route orchestration with air-lane balancing and predictive battery reserve.",
+    summary: "Move payload fast.",
     metrics: [
       { label: "Node Queue", value: "182" },
       { label: "Arrival Bias", value: "+2.1 min" },
       { label: "Reserve", value: "31%" }
     ],
-    panels: ["Node lattice", "Drop corridor", "Reserve model"]
+    panels: ["Nodes", "Drop", "Reserve"]
   },
   {
     id: "analyze",
@@ -86,13 +86,13 @@ export const missionModes: MissionMode[] = [
     code: "AN-88",
     accent: "var(--green)",
     icon: Binary,
-    summary: "Edge AI inference for terrain, anomalies, route integrity, and mission confidence.",
+    summary: "Read patterns fast.",
     metrics: [
       { label: "Inference Rate", value: "1.9T ops" },
       { label: "Anomaly Class", value: "11 clusters" },
       { label: "Confidence", value: "97.4%" }
     ],
-    panels: ["Pattern engine", "Route optimizer", "Edge summary"]
+    panels: ["Pattern", "Route", "Edge"]
   }
 ];
 
@@ -109,32 +109,32 @@ export const systemNodes = [
   {
     id: "propulsion",
     title: "Propulsion",
-    blurb: "Variable-thrust micro-adjustments tuned for dense wind pockets and silent hover correction."
+    blurb: "Stable thrust."
   },
   {
     id: "camera",
     title: "Optical Core",
-    blurb: "Dual-spectrum payload that shifts from cinematic tracking to inspection mode without frame jitter."
+    blurb: "Sharp visual lock."
   },
   {
     id: "sensors",
     title: "Sensor Ring",
-    blurb: "LiDAR, thermal, environmental pressure, and terrain depth fused into one navigational envelope."
+    blurb: "Depth and heat."
   },
   {
     id: "stabilization",
     title: "Stabilization",
-    blurb: "Inertial compensation pipeline that settles motion before it becomes visible in the image plane."
+    blurb: "Calm image plane."
   },
   {
     id: "ai",
     title: "AI Navigation",
-    blurb: "Onboard inference resolves flight path, obstacle intent, and route confidence in milliseconds."
+    blurb: "Fast route logic."
   },
   {
     id: "battery",
     title: "Battery Logic",
-    blurb: "Thermal-aware power routing models reserve windows for return, hover, and aggressive ascent."
+    blurb: "Smart reserve."
   }
 ];
 
@@ -143,30 +143,30 @@ export const useCases = [
     title: "Agriculture",
     code: "AG-06",
     icon: Waves,
-    statement: "Field topology rendered as living crop intelligence."
+    statement: "Field scan."
   },
   {
     title: "Security",
     code: "NT-19",
     icon: Crosshair,
-    statement: "Night grids pulse only where behavior deviates."
+    statement: "Night watch."
   },
   {
     title: "Cinema",
     code: "CM-22",
     icon: Orbit,
-    statement: "Camera paths glide with machine precision and human rhythm."
+    statement: "Smooth chase."
   },
   {
     title: "Logistics",
     code: "LG-08",
     icon: ScanLine,
-    statement: "Delivery nodes resolve into a breathable aerial network."
+    statement: "Fast drops."
   },
   {
     title: "Recon",
     code: "RC-14",
     icon: Fuel,
-    statement: "Long-range scans remain stable under hostile wind and low visibility."
+    statement: "Long range."
   }
 ];

@@ -162,6 +162,10 @@ button,
   will-change: transform, opacity;
 }
 
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

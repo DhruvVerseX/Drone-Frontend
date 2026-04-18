@@ -5,10 +5,10 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ensureGsapPlugins, gsap, ScrollTrigger } from "@/lib/gsap";
 
 const pathStops = [
-  ["Altitude rise", "The route leaves noise, locking to clean air and lower drag."],
-  ["Terrain read", "Contours sharpen. Obstacles become vectors, not surprises."],
-  ["Target scan", "Sensor bands tighten. Priority signatures bloom in silence."],
-  ["Return arc", "Battery logic curves the path home before risk becomes visible."]
+  ["Rise", "Clean air."],
+  ["Read", "Terrain live."],
+  ["Scan", "Target lock."],
+  ["Return", "Reserve holds."]
 ];
 
 export function FlightPathStory() {
@@ -77,7 +77,7 @@ export function FlightPathStory() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex max-w-3xl flex-col gap-4">
           <div className="tech-label">Mission path / scroll narrative</div>
-          <h2 className="text-section">Scroll like a route passes under the hull.</h2>
+          <h2 className="text-section">Follow the route.</h2>
         </div>
 
         <div
@@ -109,7 +109,7 @@ export function FlightPathStory() {
                 ].map(([label, value]) => (
                   <div key={label} className="rounded-[var(--radius-md)] border border-[color:var(--surface-line)] bg-black/30 px-3 py-3">
                     <div className="tech-label">{label}</div>
-                    <div className="mt-2 text-lg">{value}</div>
+                    <div className="mt-2 text-lg uppercase tracking-[0.12em]">{value}</div>
                   </div>
                 ))}
               </div>

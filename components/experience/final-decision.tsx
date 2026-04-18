@@ -32,10 +32,7 @@ export function FinalDecision() {
             </div>
 
             <div className="flex flex-col justify-end gap-5">
-              <p className="max-w-lg text-subhead">
-                No soft handoff. Pick the operating frame and move. Deployment starts when intention becomes
-                explicit.
-              </p>
+              <p className="max-w-lg text-subhead">Pick a mission. Move.</p>
               <div className="flex flex-wrap gap-3">
                 <SystemButton label="Request Deployment" />
                 <SystemButton label="Configure Fleet" variant="ghost" />

@@ -9,7 +9,10 @@ import { LiveTelemetry } from "@/components/experience/live-telemetry";
 import { MissionModes } from "@/components/experience/mission-modes";
 import { SystemBreakdown } from "@/components/experience/system-breakdown";
 import { UseCaseReveal } from "@/components/experience/use-case-reveal";
+import { MobileMissionDock } from "@/components/navigation/mobile-mission-dock";
 import { SystemNav } from "@/components/navigation/system-nav";
+import { CommandOverlay } from "@/components/scene/command-overlay";
+import { TacticalCursor } from "@/components/system/tactical-cursor";
 
 export function DroneExperience() {
   const [activeMode, setActiveMode] = useState("survey");
@@ -19,7 +22,9 @@ export function DroneExperience() {
 
   return (
     <main className="relative">
+      <TacticalCursor />
       <SystemNav />
+      <MobileMissionDock activeMode={activeMode} onChange={setActiveMode} />
 
       <motion.div
         style={{ scaleX: progress }}
@@ -38,10 +43,9 @@ export function DroneExperience() {
         <div className="mx-auto max-w-7xl">
           <div className="panel-strong grid gap-4 rounded-[var(--radius-lg)] p-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
-              ["Fleet", "12 aerial units"],
-              ["Signal Mesh", "global / adaptive"],
-              ["Route Logic", "edge optimized"],
-              ["Pilot State", "autonomous assist"]
+              ["Fleet", "12 units"],
+              ["Mesh", "global"],
+              ["Pilot", "assist"]
             ].map(([label, value]) => (
               <div key={label} className="rounded-[var(--radius-md)] border border-[color:var(--surface-line)] bg-black/20 px-4 py-4">
                 <div className="tech-label">{label}</div>
@@ -52,6 +56,7 @@ export function DroneExperience() {
         </div>
       </motion.section>
 
+      <CommandOverlay />
       <MissionModes activeMode={activeMode} onChange={setActiveMode} />
       <FlightPathStory />
       <SystemBreakdown />

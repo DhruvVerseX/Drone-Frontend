@@ -1,13 +1,21 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 
 const bootLines = [
-  "vector array aligned",
-  "terrain memory loaded",
-  "optic spine stabilized",
-  "route intelligence ready"
+  "vector aligned",
+  "terrain live",
+  "optic stable",
+  "route ready"
 ];
+
+const DroneCanvas = dynamic(
+  () => import("@/components/scene/drone-canvas").then((module) => module.DroneCanvas),
+  {
+    ssr: false
+  }
+);
 
 export function BootSequence() {
   const reduced = useReducedMotion();
@@ -27,16 +35,13 @@ export function BootSequence() {
             className="max-w-4xl"
           >
             <div className="text-hero">
-              Enter
+              Drone
               <br />
-              flight
+              command
               <br />
-              memory
+              live
             </div>
-            <p className="mt-6 max-w-xl text-subhead">
-              Access unfolds like a control stack. Signal calibration, terrain lock, optic sync. Then the
-              world opens.
-            </p>
+            <p className="mt-6 max-w-md text-subhead">Flight. Scan. Deliver.</p>
           </motion.div>
 
           <div className="mt-10 grid gap-3 sm:max-w-xl">
@@ -88,26 +93,19 @@ export function BootSequence() {
 
               <div className="relative mx-auto my-10 flex h-72 w-full max-w-md items-center justify-center">
                 <motion.div
-                  animate={reduced ? undefined : { rotate: [0, 2, -2, 0], y: [0, -10, 0] }}
-                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 8, ease: "easeInOut" }}
-                  className="relative h-36 w-72 will-transform"
+                  animate={reduced ? undefined : { y: [0, -6, 0] }}
+                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 6, ease: "easeInOut" }}
+                  className="relative h-full w-full will-transform"
                 >
-                  <div className="absolute left-1/2 top-1/2 h-20 w-44 -translate-x-1/2 -translate-y-1/2 rounded-[32px] border border-[color:var(--surface-strong)] bg-[rgba(8,12,18,0.9)]" />
-                  <div className="absolute left-4 top-1/2 h-px w-20 -translate-y-1/2 bg-[color:var(--surface-strong)]" />
-                  <div className="absolute right-4 top-1/2 h-px w-20 -translate-y-1/2 bg-[color:var(--surface-strong)]" />
-                  <div className="absolute left-2 top-2 h-16 w-16 rounded-full border border-[color:var(--surface-strong)]" />
-                  <div className="absolute right-2 top-2 h-16 w-16 rounded-full border border-[color:var(--surface-strong)]" />
-                  <div className="absolute left-2 bottom-2 h-16 w-16 rounded-full border border-[color:var(--surface-strong)]" />
-                  <div className="absolute right-2 bottom-2 h-16 w-16 rounded-full border border-[color:var(--surface-strong)]" />
-                  <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--cyan)] shadow-[0_0_28px_rgba(119,229,255,0.45)]" />
+                  <DroneCanvas />
                 </motion.div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
                 {[
-                  ["Crosswind", "08 kn"],
-                  ["Altitude Lock", "1,260 m"],
-                  ["Hull Temp", "37 C"]
+                  ["Wind", "08 kn"],
+                  ["Lock", "1,260 m"],
+                  ["Hull", "37 C"]
                 ].map(([label, value]) => (
                   <div key={label} className="rounded-[var(--radius-md)] border border-[color:var(--surface-line)] bg-black/20 px-4 py-3">
                     <div className="tech-label">{label}</div>

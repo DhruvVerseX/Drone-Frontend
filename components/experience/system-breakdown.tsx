@@ -15,12 +15,8 @@ export function SystemBreakdown() {
         <div className="mb-10 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <div className="tech-label">Drone systems / inspection mode</div>
-            <h2 className="text-section max-w-md">Inspect the craft like engineering has the final word.</h2>
+            <h2 className="text-section max-w-md">Inspect the craft.</h2>
           </div>
-          <p className="max-w-2xl text-subhead">
-            Each node opens as a subsystem, not a brochure card. Touch the hull. Read the logic beneath the
-            surface.
-          </p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
@@ -83,7 +79,7 @@ export function SystemBreakdown() {
                 <div className="text-section text-3xl sm:text-4xl">{activeNode.title}</div>
                 <p className="mt-5 text-subhead">{activeNode.blurb}</p>
                 <div className="mt-8 space-y-3">
-                  {["Integrity: 98.4%", "Thermal spread: nominal", "Latency: 12 ms"].map((item, index) => (
+                  {["98.4% integrity", "thermal nominal", "12 ms latency"].map((item, index) => (
                     <div
                       key={item}
                       className="rounded-[var(--radius-md)] border border-[color:var(--surface-line)] bg-black/25 px-4 py-4"
