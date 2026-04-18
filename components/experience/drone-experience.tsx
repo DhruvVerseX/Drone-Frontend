@@ -41,7 +41,7 @@ export function DroneExperience() {
         className="relative px-4 py-6 sm:px-6 lg:px-10"
       >
         <div className="mx-auto max-w-7xl">
-          <div className="panel-strong grid gap-4 rounded-[var(--radius-lg)] p-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="panel-strong grid gap-4 rounded-[var(--radius-lg)] p-4 sm:grid-cols-2 xl:grid-cols-3">
             {[
               ["Fleet", "12 units"],
               ["Mesh", "global"],
