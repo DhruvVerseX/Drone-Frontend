@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AERCTRL | Drone Mission Environment",
+  title: "Aurum Ops | SaaS Dashboard",
   description:
-    "An immersive aerospace-grade drone interface built as a cinematic control world."
+    "A dark-luxury SaaS dashboard for revenue, retention, and account intelligence."
 };
 
 export default function RootLayout({

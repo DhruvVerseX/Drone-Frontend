@@ -1,5 +1,5 @@
-import { DroneExperience } from "@/components/experience/drone-experience";
+import { SaasDashboard } from "@/components/dashboard/saas-dashboard";
 
 export default function Home() {
-  return <DroneExperience />;
+  return <SaasDashboard />;
 }
