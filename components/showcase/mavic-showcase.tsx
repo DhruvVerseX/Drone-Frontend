@@ -142,6 +142,7 @@ export default function MavicShowcase() {
   return (
     <main className="mavic-site">
       <StudioCursor />
+      <div className="mavic-content">
       <a className="skip-link" href="#flight-lab">Skip to flight lab</a>
       <motion.div className="reading-progress" style={{ scaleX: progress }} />
       <header className="site-header">
@@ -226,6 +227,7 @@ export default function MavicShowcase() {
 
       <section ref={closingRef} data-chapter="specifications" className="closing-section section-shell"><p className="eyebrow chapter-label"><span>06 /</span> YOUR NEXT CHAPTER</p><Reveal><h2>THE WORLD IS BIGGER<br />THAN YOUR <span>FRAME.</span></h2></Reveal><div className="closing-scene">{closingLoaded && <DroneScene view="landing" />}</div><div className="closing-actions"><a className="pill-button" href="#flight-lab" onClick={enterFlight}>Take another flight <ArrowUpRight size={18} /></a><a className="text-link" href="https://www.dji.com/mavic-3-pro" target="_blank" rel="noreferrer">EXPLORE MAVIC 3 PRO AT DJI <ArrowUpRight size={16} /></a></div></section>
       <footer className="site-footer section-shell"><a href="#overview" className="brand"><span className="dji-wordmark">dji</span><span className="brand-divider" /><span>MAVIC 3 PRO</span></a><p>An independent exploration of flight.</p><a href="#overview" className="eyebrow">BACK TO THE TOP <ArrowUpRight size={15} /></a><span className="footer-disclaimer">DJI and Hasselblad are trademarks of their respective owners. Original 3D interpretation; not a dimensionally exact product model.</span></footer>
+      </div>
     </main>
   );
 }
