@@ -53,3 +53,4 @@
 .soft-text { color:#838976; }
 @media (min-width:621px) { .remote-area { z-index:6; } }
 @media (max-width:620px) { .hero-scene { inset:0 12px; } }
+@media (min-width:621px) { .remote-area { position:relative; } }

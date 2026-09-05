@@ -75,9 +75,9 @@ export default function MavicShowcase() {
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
-      for (const entry of entries) if (entry.isIntersecting) setActiveChapter(entry.target.id);
+      for (const entry of entries) if (entry.isIntersecting) setActiveChapter(entry.target.getAttribute("data-chapter") || entry.target.id);
     }, { rootMargin: "-20% 0px -55% 0px" });
-    chapters.forEach(chapter => { const element = document.getElementById(chapter.id); if (element) observer.observe(element); });
+    document.querySelectorAll("section[id], section[data-chapter]").forEach(element => observer.observe(element));
     return () => observer.disconnect();
   }, []);
 
@@ -164,12 +164,12 @@ export default function MavicShowcase() {
         </div>
       </section>
 
-      <section id="performance" className="performance-section">
+      <section id="performance" data-chapter="camera" className="performance-section">
         <div className="performance-image" role="img" aria-label="A dramatic aerial landscape showing the freedom of flight" />
         <div className="performance-content section-shell"><Reveal><p className="eyebrow chapter-label"><span>03 /</span> BUILT TO GO BEYOND</p><h2>LESS LIMITS.<br />MORE <span>HORIZON.</span></h2><p>Stay with the light a little longer.<br />Let the next idea take you a little further.</p></Reveal><div className="performance-stats"><div><span className="eyebrow">TIME TO CREATE</span><strong>43<small>min</small></strong><p>Maximum flight time¹</p></div><div><span className="eyebrow">KEEP YOUR CONNECTION</span><strong>15<small>km</small></strong><p>DJI O3+ transmission²</p></div><div><span className="eyebrow">CONFIDENCE IN EVERY DIRECTION</span><strong>APAS<small>5.0</small></strong><p>Omnidirectional obstacle sensing</p></div></div><div className="performance-footnote eyebrow">¹ CONTROLLED TEST CONDITIONS. ² FCC, UNOBSTRUCTED AND INTERFERENCE-FREE. ACTUAL RESULTS VARY.</div></div>
       </section>
 
-      <section className="intelligence-section section-shell section-space">
+      <section data-chapter="camera" className="intelligence-section section-shell section-space">
         <Reveal className="section-heading"><div><p className="eyebrow chapter-label"><span>04 /</span> INTELLIGENT BY DESIGN</p><h2>LESS TO THINK ABOUT.<br /><span className="soft-text">MORE TO FEEL.</span></h2></div><p className="section-intro">You bring the imagination.<br />Mavic brings the intelligence to follow it.</p></Reveal>
         <div className="modes-layout"><div className="mode-list">{modes.map((item, index) => <button key={item.name} className={mode === index ? "mode-row is-active" : "mode-row"} aria-expanded={mode === index} aria-controls={`mode-description-${index}`} onClick={() => setMode(index)}><span className="eyebrow">0{index + 1}</span><div><h3>{item.name}</h3>{mode === index && <motion.p id={`mode-description-${index}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{item.description}</motion.p>}</div><ArrowUpRight size={21} /></button>)}</div><div className={`mode-visual mode-${mode}`}><div className="mode-map-grid" /><div className="map-rings" /><svg viewBox="0 0 500 400" className="flight-path" fill="none" aria-label={`${modes[mode].name} flight path illustration`}><path className="path-line" d={mode === 0 ? "M80 280 C130 100 350 60 390 180 S270 340 180 245 S230 80 350 130" : mode === 1 ? "M80 300 L150 110 L310 160 L400 70 L420 310 L260 270 Z" : mode === 2 ? "M110 250 C110 40 400 40 400 235 C400 370 110 370 110 200 S355 80 355 200" : "M400 100 C300 100 355 280 230 220 S90 180 110 300"} /><circle cx={mode === 3 ? "110" : "250"} cy={mode === 3 ? "300" : "200"} r="29" className="path-target" /><path d={mode === 3 ? "M98 302 L110 290 L122 302 M101 300 V310 H119 V300" : "M240 194 L246 200 L240 206 M260 194 L254 200 L260 206"} stroke="currentColor" strokeWidth="1.5" /></svg><div className="mode-map-top eyebrow"><span>INTELLIGENT FLIGHT</span><span>0{mode + 1}</span></div><AnimatePresence mode="wait"><motion.div key={mode} className="mode-map-bottom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><span className="eyebrow">{modes[mode].short}</span><span>Designed around your vision.<ArrowUpRight size={20} /></span></motion.div></AnimatePresence><span className="mode-demo-label eyebrow">ILLUSTRATIVE FLIGHT PATH</span></div></div>
       </section>
@@ -180,7 +180,7 @@ export default function MavicShowcase() {
         <div className="source-notes"><p>¹ DJI measures up to 43 minutes in controlled, windless conditions at a constant 32.4 km/h, until forced landing. Flight time varies with conditions, use, and firmware.</p><p>² Up to 15 km under FCC standards; 8 km under CE/SRRC/MIC. Measured without obstacles or interference, for one-way communication without a return flight. Transmission range is not a safe operating distance.</p><p>Product specifications sourced from <a href="https://www.dji.com/mavic-3-pro/specs" target="_blank" rel="noreferrer">DJI</a>. Sensing performance depends on lighting and surroundings. This is an independent design concept, not an official DJI website.</p></div>
       </section>
 
-      <section ref={closingRef} className="closing-section section-shell"><p className="eyebrow chapter-label"><span>06 /</span> YOUR NEXT CHAPTER</p><Reveal><h2>THE WORLD IS BIGGER<br />THAN YOUR <span>FRAME.</span></h2></Reveal><div className="closing-scene">{closingLoaded && <DroneScene view="landing" />}</div><div className="closing-actions"><a className="pill-button" href="#flight-lab" onClick={enterFlight}>Take another flight <ArrowUpRight size={18} /></a><a className="text-link" href="https://www.dji.com/mavic-3-pro" target="_blank" rel="noreferrer">EXPLORE MAVIC 3 PRO AT DJI <ArrowUpRight size={16} /></a></div></section>
+      <section ref={closingRef} data-chapter="specifications" className="closing-section section-shell"><p className="eyebrow chapter-label"><span>06 /</span> YOUR NEXT CHAPTER</p><Reveal><h2>THE WORLD IS BIGGER<br />THAN YOUR <span>FRAME.</span></h2></Reveal><div className="closing-scene">{closingLoaded && <DroneScene view="landing" />}</div><div className="closing-actions"><a className="pill-button" href="#flight-lab" onClick={enterFlight}>Take another flight <ArrowUpRight size={18} /></a><a className="text-link" href="https://www.dji.com/mavic-3-pro" target="_blank" rel="noreferrer">EXPLORE MAVIC 3 PRO AT DJI <ArrowUpRight size={16} /></a></div></section>
       <footer className="site-footer section-shell"><a href="#overview" className="brand"><span className="dji-wordmark">dji</span><span className="brand-divider" /><span>MAVIC 3 PRO</span></a><p>An independent exploration of flight.</p><a href="#overview" className="eyebrow">BACK TO THE TOP <ArrowUpRight size={15} /></a><span className="footer-disclaimer">DJI and Hasselblad are trademarks of their respective owners. Original 3D interpretation; not a dimensionally exact product model.</span></footer>
     </main>
   );
