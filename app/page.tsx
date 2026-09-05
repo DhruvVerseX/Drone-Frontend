@@ -1,5 +1,5 @@
-import { SaasDashboard } from "@/components/dashboard/saas-dashboard";
+import MavicShowcase from "@/components/showcase/mavic-showcase";
 
 export default function Home() {
-  return <SaasDashboard />;
+  return <MavicShowcase />;
 }
