@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "tsc --noEmit --incremental false",
+    "test": "node scripts/check-flight.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",

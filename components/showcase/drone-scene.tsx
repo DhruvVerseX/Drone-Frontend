@@ -21,12 +21,26 @@ export type DroneSceneProps = {
 };
 
 const IDLE_INPUT: FlightInput = { throttle: 0, yaw: 0, pitch: 0, roll: 0, gimbal: 0 };
+const FOLDED_ARM_ANGLES = [-1.88, 2, 1.88, -2]; // Front left, rear left, front right, rear right.
+let webglAvailable: boolean | undefined;
+
+function supportsWebGL() {
+  if (webglAvailable !== undefined) return webglAvailable;
+  try {
+    const context = document.createElement("canvas").getContext("webgl2");
+    webglAvailable = Boolean(context);
+    context?.getExtension("WEBGL_lose_context")?.loseContext();
+  } catch {
+    webglAvailable = false;
+  }
+  return webglAvailable;
+}
 
 function SceneFallback() {
-  return <div style={{ height: "100%", minHeight: 220, display: "grid", placeContent: "center", textAlign: "center", gap: 12, color: "#72766e" }}>
-    <span style={{ fontSize: 11, letterSpacing: "0.2em" }}>DJI MAVIC 3 PRO</span>
-    <span style={{ fontSize: 24, color: "#292c25" }}>A new perspective awaits.</span>
-    <span style={{ fontSize: 12 }}>Enable WebGL to explore the interactive 3D model.</span>
+  return <div style={{ height: "100%", minHeight: 220, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, color: "#72766e" }}>
+    <img src="/images/mavic-product.png" alt="DJI Mavic 3 Pro folded for travel, viewed from above" width={640} height={640} style={{ width: "80%", height: "75%", objectFit: "contain" }} />
+    <span style={{ fontSize: 10, letterSpacing: "0.1em" }}>DJI MAVIC 3 PRO</span>
+    <span style={{ fontSize: 11 }}>3D is unavailable on this device. Product preview shown.</span>
   </div>;
 }
 
@@ -76,6 +90,8 @@ function SceneContent({
   const flight = useRef(createFlightState());
   const flightClock = useRef(0);
   const elapsed = useRef(0);
+  const frameSample = useRef({ count: 0, total: 0, slow: 0 });
+  const profile = useMemo(() => new URLSearchParams(window.location.search).has("profile"), []);
   const { camera, size, invalidate } = useThree();
   const focus = useRef(new THREE.Vector3());
   const cameraTarget = useRef(new THREE.Vector3(4.9, 3.3, 7.4));
@@ -94,7 +110,7 @@ function SceneContent({
   useEffect(() => {
     const fit = Math.max(1, 1.18 / (size.width / size.height));
     if (view === "camera") {
-      cameraTarget.current.set(1.35 * fit, 0.52 * fit, 3.0 * fit);
+      cameraTarget.current.set((cameraIndex === 2 ? -1.2 : cameraIndex === 1 ? 1.55 : 1.1) * fit, 0.52 * fit, 3.0 * fit);
       focus.current.set(0, -0.26, 0.79);
     } else if (view === "flight") {
       cameraTarget.current.set(5.7 * fit, 4.7 * fit, 8.4 * fit);
@@ -110,9 +126,16 @@ function SceneContent({
 
   useFrame((_, delta) => {
     if (!body.current) return;
-    const dt = Math.min(delta, 0.04);
+    const dt = Math.min(delta, 0.1);
     const controls = input?.current ?? IDLE_INPUT;
     const running = !paused;
+    if (profile && running && delta > 0 && delta < 0.5 && frameSample.current.count < 180) {
+      const sample = frameSample.current;
+      sample.count++;
+      sample.total += delta;
+      if (delta > 0.025) sample.slow++;
+      if (sample.count === 180) console.info("MAVIC_FRAME_PROFILE", JSON.stringify({ view, frames: 180, fps: Math.round(180 / sample.total), averageMs: +(sample.total * 1000 / 180).toFixed(2), framesOver25ms: sample.slow }));
+    }
     if (running) elapsed.current += dt;
     const time = elapsed.current;
     const damping = 1 - Math.exp(-dt * 5);
@@ -121,10 +144,10 @@ function SceneContent({
       const state = running ? stepFlight(flight.current, controls, dt) : flight.current;
       body.current.position.set(state.position.x, state.position.y - 1.4, state.position.z);
       body.current.rotation.set(state.pitch, state.heading, state.roll, "YXZ");
-      body.current.scale.setScalar(0.62);
+      body.current.scale.setScalar(0.76);
       if (cameraMode === "follow" && running) {
         scratch.target.set(state.position.x, state.position.y - 1.2, state.position.z);
-        scratch.offset.set(3.6, 2.75, 5.4).applyAxisAngle(scratch.axis, state.heading).add(scratch.target);
+        scratch.offset.set(3.6, 2.75, 5.4).multiplyScalar(Math.max(1, 1.18 / (size.width / size.height))).applyAxisAngle(scratch.axis, state.heading).add(scratch.target);
         camera.position.lerp(scratch.offset, 1 - Math.exp(-dt * 2.4));
         camera.lookAt(scratch.target);
         if (orbit.current) orbit.current.target.copy(scratch.target);
@@ -151,7 +174,7 @@ function SceneContent({
       );
       body.current.scale.setScalar(1);
       if (view === "landing") arms.current.forEach((arm, i) => {
-        if (arm) arm.rotation.y = landing * (i < 2 ? 1 : -1) * (i % 2 === 0 ? 1.88 : -1.1);
+        if (arm) arm.rotation.y = Math.max(0, landing * 2 - 1) * FOLDED_ARM_ANGLES[i];
       });
     }
 
@@ -168,8 +191,11 @@ function SceneContent({
     }
 
     if (cameraMode !== "follow" || view !== "flight") {
-      if (transition.current > 0.002 && !interacting.current) {
-        camera.position.lerp(cameraTarget.current, damping);
+      const cameraPush = view === "camera" && !reduced;
+      if ((transition.current > 0.002 || cameraPush) && !interacting.current) {
+        scratch.offset.copy(cameraTarget.current);
+        if (cameraPush) scratch.offset.sub(focus.current).multiplyScalar(1 + (1 - scroll.current.progress) * 0.22).add(focus.current);
+        camera.position.lerp(scratch.offset, damping);
         if (orbit.current) orbit.current.target.lerp(focus.current, damping);
         camera.lookAt(orbit.current?.target ?? focus.current);
         transition.current *= 1 - damping;
@@ -208,20 +234,26 @@ export default function DroneScene(props: DroneSceneProps) {
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
   const [ready, setReady] = useState(false);
+  const [webgl, setWebgl] = useState<boolean | null>(null);
 
   useEffect(() => {
+    setWebgl(supportsWebGL());
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updateMotion = () => setReduced(media.matches);
-    const updateVisibility = () => setActive(!document.hidden);
+    const updateVisibility = () => setActive(!document.hidden && document.hasFocus());
     updateMotion();
     updateVisibility();
     media.addEventListener("change", updateMotion);
     document.addEventListener("visibilitychange", updateVisibility);
+    window.addEventListener("focus", updateVisibility);
+    window.addEventListener("blur", updateVisibility);
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { rootMargin: "80px" });
     if (host.current) observer.observe(host.current);
     return () => {
       media.removeEventListener("change", updateMotion);
       document.removeEventListener("visibilitychange", updateVisibility);
+      window.removeEventListener("focus", updateVisibility);
+      window.removeEventListener("blur", updateVisibility);
       observer.disconnect();
     };
   }, []);
@@ -238,17 +270,19 @@ export default function DroneScene(props: DroneSceneProps) {
 
   return <div ref={host} className={props.className} data-cursor="orbit" style={{ width: "100%", height: "100%", position: "relative" }}>
     <SceneBoundary>
+      {webgl === false ? <SceneFallback /> : <>
       {!ready && <div aria-live="polite" style={{ position: "absolute", inset: 0, display: "grid", placeContent: "center", fontSize: 10, letterSpacing: "0.2em", color: "#85877e" }}>PREPARING YOUR PERSPECTIVE</div>}
-      <Canvas
+      {webgl && <Canvas role="img"
         aria-label={props.view === "flight" ? "Interactive DJI Mavic 3 Pro flight simulation" : "Interactive three-dimensional DJI Mavic 3 Pro. Drag to orbit."}
-        fallback={<SceneFallback />} frameloop={active && visible && (!reduced || props.view === "flight") && !props.paused ? "always" : "demand"}
+        frameloop={active && visible && (!reduced || props.view === "flight") && !props.paused ? "always" : "demand"}
         dpr={[1, 1.5]} camera={{ position: [4.9, 3.3, 7.4], fov: 33, near: 0.1, far: 60 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
         onCreated={({ gl }) => { gl.setClearColor(0x000000, 0); setReady(true); }}
         style={{ opacity: ready ? 1 : 0, transition: "opacity 700ms ease", touchAction: props.view === "flight" ? "pan-y" : "none" }}
       >
         <Suspense fallback={null}><SceneContent {...props} reduced={reduced} scroll={scroll} /></Suspense>
-      </Canvas>
+      </Canvas>}
+      </>}
     </SceneBoundary>
   </div>;
 }

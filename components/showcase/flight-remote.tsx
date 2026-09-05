@@ -25,6 +25,7 @@ const flightKeys = new Set(["w", "a", "s", "d", "ArrowUp", "ArrowDown", "ArrowLe
 export default function FlightRemote({ input, telemetry, onReset, paused, onTogglePause, active }: Props) {
   const [sticks, setSticks] = useState(neutral);
   const [gimbal, setGimbal] = useState(input.current.gimbal);
+  const remote = useRef<HTMLDivElement>(null);
   const pointers = useRef(neutral());
   const keys = useRef(new Set<string>());
   const enabled = active && !paused;
@@ -56,6 +57,13 @@ export default function FlightRemote({ input, telemetry, onReset, paused, onTogg
 
   useEffect(() => {
     if (!enabled) clear();
+    const canUseKeyboard = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) return true;
+      if (target.closest("input, textarea, select, [contenteditable]:not([contenteditable=false]), [role=tablist]")) return false;
+      const control = target.closest("button, a, summary, [role]");
+      const section = remote.current?.closest("section");
+      return !control || !!section?.contains(control) || control.getAttribute("href") === `#${section?.id}`;
+    };
     const onKey = (event: KeyboardEvent) => {
       const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
       if (!flightKeys.has(key)) return;
@@ -64,15 +72,14 @@ export default function FlightRemote({ input, telemetry, onReset, paused, onTogg
         publish();
         return;
       }
-      if (!enabled || event.metaKey || event.ctrlKey || event.altKey ||
-        event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable=true]")) return;
+      if (!enabled || event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || !canUseKeyboard(event.target)) return;
       event.preventDefault();
       keys.current.add(key);
       publish();
     };
     const onVisibility = () => { if (document.hidden) clear(); };
     const onFocus = (event: FocusEvent) => {
-      if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable=true]")) clear();
+      if (!canUseKeyboard(event.target)) clear();
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("keyup", onKey);
@@ -141,7 +148,7 @@ export default function FlightRemote({ input, telemetry, onReset, paused, onTogg
   }
 
   return (
-    <div className={`flight-remote ${paused ? "is-paused" : ""}`}>
+    <div ref={remote} className={`flight-remote ${paused ? "is-paused" : ""}`}>
       <div className="rc-device">
         <div className="rc-antenna rc-antenna--left" aria-hidden="true" />
         <div className="rc-antenna rc-antenna--right" aria-hidden="true" />
@@ -156,7 +163,7 @@ export default function FlightRemote({ input, telemetry, onReset, paused, onTogg
           <div className="rc-readouts">
             <div><span>ALTITUDE</span><strong>{telemetry.altitude.toFixed(1)}<small>m</small></strong></div>
             <div><span>VELOCITY</span><strong>{telemetry.speed.toFixed(1)}<small>m/s</small></strong></div>
-            <div className="rc-bearing"><ArrowUp size={23} strokeWidth={1.5} style={{ transform: `rotate(${telemetry.heading}deg)` }} /><strong>{Math.round(telemetry.heading).toString().padStart(3, "0")}<small>°</small></strong></div>
+            <div className="rc-bearing"><ArrowUp size={23} strokeWidth={1.5} style={{ transform: `rotate(${telemetry.heading}deg)` }} /><strong>{(Math.round(telemetry.heading) % 360).toString().padStart(3, "0")}<small>°</small></strong></div>
           </div>
           <div className="rc-screen-bottom"><span>HOME {telemetry.distance.toFixed(1)} m</span><span>MODE 2 <b>●</b> SIMULATION</span></div>
         </div>

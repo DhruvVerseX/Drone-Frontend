@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useInView, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronDown, Compass, Crosshair, Focus, Menu, MoveUpRight, Pause, Play, RotateCcw, ScanLine, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, ChevronDown, Compass, Crosshair, Focus, Menu, MoveUpRight, Play, RotateCcw, ScanLine, X } from "lucide-react";
 import { cameras, specs } from "@/data/showcase-specs";
 import type { FlightInput, FlightTelemetry } from "./flight-physics";
 import FlightRemote from "./flight-remote";
@@ -62,9 +62,10 @@ export default function MavicShowcase() {
   const [telemetry, setTelemetry] = useState<FlightTelemetry>({ altitude: 1.6, speed: 0, heading: 0, distance: 0 });
   const input = useRef<FlightInput>({ throttle: 0, yaw: 0, pitch: 0, roll: 0, gimbal: -12 });
   const flightRef = useRef<HTMLElement>(null);
+  const arenaRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLElement>(null);
   const closingRef = useRef<HTMLElement>(null);
-  const flightVisible = useInView(flightRef, { amount: 0.15 });
+  const flightVisible = useInView(arenaRef, { amount: 0.1 });
   const flightLoaded = useInView(flightRef, { once: true, margin: "300px" });
   const cameraLoaded = useInView(cameraRef, { once: true, margin: "300px" });
   const closingLoaded = useInView(closingRef, { once: true, margin: "300px" });
@@ -139,7 +140,7 @@ export default function MavicShowcase() {
 
       <section id="flight-lab" ref={flightRef} className="flight-section section-shell section-space">
         <Reveal className="section-heading"><div><p className="eyebrow chapter-label"><span>01 /</span> THE FLIGHT LAB</p><h2>YOUR INSTINCT.<br /><span className="soft-text">ITS NEXT MOVE.</span></h2></div><div className="section-intro"><span className="mini-cross">+</span><p>Some things are better experienced.<br />Take the controls. Find your own angle.<br />The sky is yours to explore.</p><span className="eyebrow">INTERACTIVE 3D FLIGHT EXPERIENCE</span></div></Reveal>
-        <div className="flight-arena">
+        <div className="flight-arena" ref={arenaRef}>
           <div className="arena-topline"><span className="eyebrow"><i className={`status-dot ${paused ? "idle" : ""}`} /> {paused ? "READY WHEN YOU ARE" : "FLIGHT SYSTEM ACTIVE"}</span><div className="segmented-control" aria-label="Flight camera view"><button aria-pressed={cameraMode === "orbit"} onClick={() => setCameraMode("orbit")}><RotateCcw size={13} /> Orbit</button><button aria-pressed={cameraMode === "follow"} onClick={() => setCameraMode("follow")}><Crosshair size={13} /> Follow</button></div></div>
           <div className="arena-grid" aria-hidden="true" />
           <span className="arena-watermark" aria-hidden="true">FLIGHT LAB</span>
