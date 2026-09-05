@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useInView, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { ArrowDown, ArrowUpRight, ChevronDown, Compass, Crosshair, Focus, Menu, MoveUpRight, Play, RotateCcw, ScanLine, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, ChevronDown, Compass, Crosshair, Focus, Menu, Moon, MoveUpRight, Play, RotateCcw, ScanLine, Sun, UsersRound, X } from "lucide-react";
 import { cameras, specs } from "@/data/showcase-specs";
 import type { FlightInput, FlightTelemetry } from "./flight-physics";
 import FlightRemote from "./flight-remote";
@@ -42,6 +42,34 @@ function StudioCursor() {
   return <div ref={cursor} className="studio-cursor" aria-hidden="true"><i /><span /></div>;
 }
 
+function LiveVisitorCount() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const key = "mavic-presence-id";
+    const visitorId = sessionStorage.getItem(key) ?? crypto.randomUUID();
+    sessionStorage.setItem(key, visitorId);
+    const updatePresence = async () => {
+      if (document.visibilityState !== "visible") return;
+      const response = await fetch("/api/presence", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ visitorId })
+      });
+      if (response.ok) setCount((await response.json()).count);
+    };
+    void updatePresence();
+    const interval = window.setInterval(() => void updatePresence(), 25_000);
+    document.addEventListener("visibilitychange", updatePresence);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", updatePresence);
+    };
+  }, []);
+
+  return <div className="live-visitors" aria-live="polite" aria-label={count === null ? "Checking live visitor count" : `${count} people online now`}><i /><UsersRound size={14} aria-hidden="true" /><span>{count ?? "—"} online</span></div>;
+}
+
 const chapters = [{ id: "overview", name: "Overview" }, { id: "flight-lab", name: "Flight lab" }, { id: "camera", name: "Camera system" }, { id: "specifications", name: "Tech specs" }];
 
 const modes = [
@@ -53,6 +81,7 @@ const modes = [
 
 export default function MavicShowcase() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [activeChapter, setActiveChapter] = useState("overview");
   const [lens, setLens] = useState(0);
   const [mode, setMode] = useState(0);
@@ -72,6 +101,21 @@ export default function MavicShowcase() {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const enabled = localStorage.getItem("mavic-dark-mode") === "true";
+    setDarkMode(enabled);
+    document.body.classList.toggle("dark-mode", enabled);
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(current => {
+      const next = !current;
+      localStorage.setItem("mavic-dark-mode", String(next));
+      document.body.classList.toggle("dark-mode", next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
@@ -103,7 +147,7 @@ export default function MavicShowcase() {
       <header className="site-header">
         <a href="#overview" className="brand" aria-label="DJI Mavic 3 Pro home"><span className="dji-wordmark">dji</span><span className="brand-divider" /><span>MAVIC 3 PRO</span></a>
         <nav className="desktop-nav" aria-label="Main navigation">{chapters.map(chapter => <a key={chapter.id} href={`#${chapter.id}`} className={activeChapter === chapter.id ? "is-active" : ""}>{chapter.name}</a>)}</nav>
-        <a className="header-cta" href="#flight-lab" onClick={enterFlight}>Take control <ArrowUpRight size={15} /></a>
+        <div className="header-actions"><LiveVisitorCount /><button className="theme-toggle" type="button" onClick={toggleDarkMode} aria-pressed={darkMode} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>{darkMode ? <Sun size={15} /> : <Moon size={15} />}</button><a className="header-cta" href="#flight-lab" onClick={enterFlight}>Take control <ArrowUpRight size={15} /></a></div>
         <button className="menu-toggle" aria-label={menuOpen ? "Close navigation" : "Open navigation"} aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
         <AnimatePresence>{menuOpen && <motion.nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>{chapters.map(chapter => <a key={chapter.id} href={`#${chapter.id}`} onClick={() => setMenuOpen(false)}>{chapter.name}<ArrowUpRight size={18} /></a>)}</motion.nav>}</AnimatePresence>
       </header>
